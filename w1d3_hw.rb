@@ -18,11 +18,11 @@ def gamma_fnc(num)
 
 end
 
-def range(start, ending)
-  return [] if start > ending
-  return [start] if start == ending
+def range(range_start, range_end)
+  return [] if range_start > range_end
+  return [range_start] if range_start == range_end
   # range(1,3 ==> )[1,2,3]
   # [1] + [2,3]
 
-  return [start] + range(start + 1, ending)
+  return [range_start] + range(range_start + 1, range_end)
 end

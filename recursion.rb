@@ -1,132 +1,105 @@
 require 'byebug'
 
 def range(start, ending)
-  return [] if ending < start
+  return [] if start > ending
   return [start] if start == ending
-
-  # start, start + 1
-  [start] + range(start + 1, ending)
+  return [start] + range(start + 1, ending)
 end
 
 def sum_arr(arr)
-  return nil if arr.empty?
-  return arr.first if arr.length == 1
-  arr.first + sum_arr(arr[1..-1])
 
 end
 
 def sum_arr_irr(arr)
-  sum = 0
-  arr.each do |num|
-    sum += num
-  end
-  sum
+
 end
 
 def exp1(b,n)
-  return (b ** n) if n < 0
   return 1 if n == 0
-  b * exp1(b, n - 1)
-
+  return b * exp1(b, n - 1)
 end
 
 def exp2(b, n)
-  return (b ** n) if n < 0
   return 1 if n == 0
-
-  even_exp = exp2(b, n / 2)
-  return even_exp * even_exp if n.even?
-
-  odd_exp = exp2(b, (n - 1) / 2)
-  b * (odd_exp * odd_exp)
-
+  return b if n == 1
+  return exp2(b, n / 2) ** 2 if n.even?
+  return b * (exp2(b, (n - 1)/ 2) ** 2)
 end
 
 class Array
   def deep_dup
-    # return [] if arr.empty?
-    arr_copy = []
-    self.each do |el|
-      if el.is_a?(Array)
-        arr_copy << el.deep_dup
-      else
-        arr_copy << el
-      end
+    return self if length <= 1
+    arr = []
+    each do |el|
+      arr << (el.is_a?(Array) ? el.deep_dup : el)
     end
-    arr_copy
-    # return arr unless arr.is_a?(Array)
+    arr
   end
 end
 
 def fibonacci(n)
-  return [] if n <= 0
-  return [1] if n == 1
-  return [1,1] if n == 2
-  prev_arr = fibonacci(n-1)
-  prev_arr << prev_arr[-1] + prev_arr[-2]
+  return [] if n == 0
+  return [0] if n == 1
+  return [0,1] if n == 2
+  f_arr = fibonacci(n - 1)
+  f_arr << (f_arr[-1] + f_arr[-2])
+  f_arr
 end
 
 def fib_itr(n)
-  return [] if n <= 0
-  return [1] if n == 1
-  return [1,1] if n == 2
-  new_arr = [1,1]
+  return [] if n == 0
+  return [0] if n == 1
+  return [0,1] if n == 2
+  arr = [0,1]
   3.upto(n) do |i|
-    new_arr << new_arr[-1] + new_arr[-2]
+    arr << (arr[-1] + arr[-2])
   end
-  new_arr
+  arr
 end
 
 def bsearch(arr, target)
   return nil unless arr.include?(target)
-
-  pivot = arr.length / 2
-  return pivot if arr[pivot] == target
-  high_low = arr[pivot] <=> target
-  if high_low == 1
-    pivot = bsearch(arr[0...pivot], target)
-  else
-    pivot += bsearch(arr[pivot..-1], target)
-  end
+  mid = arr.length / 2
+  return mid if arr[mid] == target
+  return bsearch(arr.take(mid),target) if arr[mid] > target
+  return mid + bsearch(arr.drop(mid),target) if arr[mid] < target
 end
 
 class Array
   def merge_sort
-    # debugger
-    return self if self.length <= 1
-    pivot = self.length / 2
-    left_arr = self.take(pivot)
-    right_arr = self.drop(pivot)
-
-    merge(left_arr.merge_sort, right_arr.merge_sort)
+    return self if length <= 1
+    mid = length / 2
+    left = take(mid)
+    right = drop(mid)
+    merge(left.merge_sort, right.merge_sort)
 
   end
 
   def merge(arr1, arr2)
-    # debugger
-    return_array = []
-
-    until arr1.empty? && arr2.empty?
-      return_array << arr1.shift if arr2.length == 0
-      return_array << arr2.shift if arr1.length == 0 && !arr2.empty?
-      compare = arr1.first <=> arr2.first
-      return_array << arr2.shift if compare == 1
-      return_array << arr1.shift if compare == -1
+    arr = []
+    until arr1.empty? || arr2.empty?
+      case arr1.first <=> arr2.first
+      when -1
+        arr << arr1.shift
+      when 0
+        arr << arr1.shift
+      when 1
+        arr << arr2.shift
+      end
     end
-    return_array
+    arr + arr1 + arr2
   end
 
 end
 
 def subset2(arr)
+  return [[]] if arr.empty?
+  return [[], arr] if arr.length == 1
 
-  return [[]] if arr.length == 0
-
-  prev_set = subset2(arr[0...-1])
-  set = prev_set.deep_dup.map { |set| set << arr.last }
-
-  prev_set + set
-
+  # arr length == 2
+  sub_arr = subset2(arr.take(arr.length - 1))
+  p sub_arr
+  sub_arr + sub_arr.map {|el| el + [arr.last]}
 end
 
 def greedy_make_change(amount, coins)
